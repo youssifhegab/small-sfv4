@@ -5,13 +5,9 @@ import Link from 'next/link'
 const name = 'Youssif Hegab'
 export const siteTitle = 'Next.js Sample Website'
 
-export default function Layout({ children, home }) {
+export default function Layout({ children }) {
     return (
-        <>
-            <div className='hero-image'>
-                <h1>in layout</h1>
-            </div>
-            
+        <>  
             <main>{children}</main>
         </>
     );

@@ -1,4 +1,3 @@
-
 const apiEndpoint = "https://graphql-sfv4.zyda.com/graphql"
 const subdomain = "demo-sfv4"
 export const query = `query ($subdomain: String!) {
@@ -12,17 +11,17 @@ export const query = `query ($subdomain: String!) {
       photoUrl
     }
     categories(subdomain: $subdomain){
-      products{
-        descriptionEn
-        maxPrepTime
-        displayPrice
+        products{
+          descriptionEn
+          maxPrepTime
+          displayPrice
+          titleEn
+        }
+        photoUrl
+        restaurantId
         titleEn
+        uuid
       }
-      photoUrl
-      restaurantId
-      titleEn
-      uuid
-    }
   }`
 
 
