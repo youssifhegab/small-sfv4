@@ -1,64 +1,42 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { Header } from '../components/Header'
-import styles from '../styles/Home.module.css'
 import Layout from '../components/layout'
-import { useStore } from '../libs/store'
-import { gql, request } from 'graphql-request'
-
-const subdomain = "demo-sfv4"
-const variables = {subdomain}
-const query = gql`query ($subdomain: String!) {
-    store (subdomain: $subdomain) {
-      id
-      branchesCount
-      logoUrl
-      descriptionEn
-      faviconUrl
-      pageTitleEn
-      photoUrl
-    }
-    categories(subdomain: $subdomain){
-        products{
-          descriptionEn
-          maxPrepTime
-          displayPrice
-          titleEn
-        }
-        photoUrl
-        restaurantId
-        titleEn
-        uuid
-      }
-  }`
+import { Ring } from 'react-awesome-spinners'
+import { getStoreDetails } from '../libs/store'
+import useCategories from '../libs/hooks/useCategories'
+import useStore from '../libs/hooks/useStore'
 
 
+const Home = ({serverData}) => {
+  const {data: cachedData, isLoading: isLoadingCache} = useStore({initialData: serverData})
+  console.log(cachedData, isLoadingCache)
 
+  const {data, error, isLoading} = useCategories()
+  console.log(data, isLoading)
 
-export default function Home() {
-
-  const {data, error} = useStore(query, variables)
+  
   if (error) return <h1>Something went wrong!</h1>
-  if (!data) return <h1>Loading...</h1>
+  if (!data) return <Ring />
+
   return (
-    <Layout className={styles.container}>
+    <Layout>
       <Head>
-        <title>Home</title>
+        <title>store front</title>
       </Head>
       <Header> 
-        <Image 
-          src='/images/logo.png' 
-          alt={data.store.pageTitleEn} 
-          height={100}
-          width={100}/>
-        <h1>{data.store.pageTitleEn}</h1>
+        <img 
+          src={cachedData.store.faviconUrl} 
+          alt={cachedData.store.descriptionEn}
+          width='144'/>
+        <h1>{cachedData.store.pageTitleEn}</h1>
       </Header>
-      <div style={{marginLeft: '20px'}}>
+      <Header style={{marginLeft: '20px'}}>
         <ol>
           {data.categories.map(category => (
             <li key={category.uuid}>
               {category.titleEn}
               <ul>
+                <br />
                 {category.products.map(product => (
                   <li key={product.uuid}>
                     {product.titleEn}
@@ -69,8 +47,19 @@ export default function Home() {
             </li>
           ))}
         </ol>
-      </div>
+      </Header>
     </Layout>
   )
 }
 
+export const getServerSideProps = async () => {
+  const serverData = await getStoreDetails();
+  return {
+    props: {
+      serverData,
+    }
+  }
+}
+
+
+export default Home;
